@@ -59,16 +59,18 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Unable to fetch video metadata", err)
 	}
-
+	//check if the user updating the Thumbnail is the owner of the video
 	if userID != videoMetadata.UserID {
 		respondWithError(w, http.StatusUnauthorized, "Unauthorized", err)
 	}
 
+	//embedding the file in memory so it can be
 	var thumbnail thumbnail = thumbnail{
 		data:      imageData,
 		mediaType: mediaType,
 	}
 	videoThumbnails[videoID] = thumbnail
+
 	thumbnailURL := fmt.Sprintf("http://localhost:8091/api/thumbnails/%v", videoID)
 	videoMetadata.ThumbnailURL = &thumbnailURL
 
